@@ -1,27 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Loading Sequence</title>
-</head>
+<html>
 <body>
-    <!-- Step 1: Request an image from a Google-owned domain to ensure a Google cookie -->
-    <img id="google-cookie-init" src="https://ad.doubleclick.net/favicon.ico" style="display:none;" alt="">
+    <p>Testing Google Cookie Creation...</p>
 
-    <!-- Step 2: Attempt cookie matching, initially hidden and not loaded -->
-    <img id="cm" style="display:none;" alt="">
-
+    <!-- Step 1: Trigger a Google ad request to initiate a cookie -->
+    <iframe class="google-cookie-init" src="https://googleads.g.doubleclick.net/pagead/id" style="display:none;"></iframe>
+    
+    <!-- Step 2: Attempt cookie matching -->
+    <img class="cm" src="https://cm.g.doubleclick.net/pixel?google_nid=moloco_ads&google_hm=Y29va2llZnJvbXNjcmF0Y2g=" style="display:none;">
+    
     <script>
-        // Get references to the images
-        const googleCookieImage = document.getElementById('google-cookie-init');
-        const cookieMatchImage = document.getElementById('cm');
+        function log(message) {
+            console.log("[Test] " + message);
+            let p = document.createElement("p");
+            p.textContent = message;
+            document.body.appendChild(p);
+        }
 
-        // Add an event listener to the first image to detect when it has loaded
-        googleCookieImage.onload = function() {
-            // Once the first image has loaded, set the src of the second image to load it
-            cookieMatchImage.src = 'https://cm.g.doubleclick.net/pixel?google_nid=moloco_ads&google_hm=Y29va2llZnJvbXNjcmF0Y2g=';
-        };
+        function waitForElementsToLoad(selectors, timeout) {
+            return new Promise(resolve => {
+                let elements = Array.from(document.querySelectorAll(selectors)).filter(el => !el.complete && !el.contentWindow);
+                
+                if (elements.length === 0) {
+                    log(selectors + " loaded instantly.");
+                    resolve();
+                } else {
+                    let loadedCount = 0;
+                    function checkLoaded() {
+                        loadedCount++;
+                        log(selectors + " element loaded: " + loadedCount + "/" + elements.length);
+                        if (loadedCount >= elements.length) {
+                            resolve();
+                        }
+                    }
+                    elements.forEach(el => {
+                        if (el.tagName === "IMG") {
+                            el.onload = el.onerror = checkLoaded;
+                        } else if (el.tagName === "IFRAME") {
+                            el.onload = checkLoaded;
+                        }
+                    });
+
+                    setTimeout(() => {
+                        log(selectors + " timeout reached.");
+                        resolve();
+                    }, timeout);
+                }
+            });
+        }
+
+        log("Waiting for Google cookie initialization...");
+        waitForElementsToLoad(".google-cookie-init", 300).then(() => {
+            log("Google cookie initialization complete. Now starting cookie matching...");
+            return waitForElementsToLoad(".cm", 300);
+        }).then(() => {
+            log("Cookie matching process complete!");
+        });
+
+        setTimeout(() => {
+            log("Final timeout reached. Stopping test.");
+        }, 700);
     </script>
 </body>
 </html>
