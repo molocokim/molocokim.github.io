@@ -1,23 +1,48 @@
-<!DOCTYPE html>
 <html>
-<head>
-  <title>My GitHub Pages Site</title>
-</head>
 <body>
-  <h1>Welcome to My Site</h1>
-  <!-- Your content goes here -->
+    <!-- Step 1: Request an image from a Google-owned domain to ensure a Google cookie -->
+    <img class="google-cookie-init" src="https://ad.doubleclick.net/favicon.ico" style="display:none;">
+    
+    <!-- Step 2: Attempt cookie matching -->
+    <img class="cm" src="https://cm.g.doubleclick.net/pixel?google_nid=moloco_ads&google_hm=Y29va2llZnJvbXNjcmF0Y2g=" style="display:none;">
+    
+    <script>
+        function rtfp() {
+            window.location.replace("https://play.google.com/store/apps/details?id=com.NewFolderGames.IAmSecurirty");
+        }
 
-  <!-- Google AdSense Ad Code -->
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-       data-ad-slot="XXXXXXXXXX"
-       data-ad-format="auto"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
+        function waitForImagesToLoad(selectors, timeout) {
+            return new Promise(resolve => {
+                let images = Array.from(document.querySelectorAll(selectors))
+                    .filter(img => !img.complete);
+                
+                if (images.length === 0) {
+                    resolve();
+                } else {
+                    let loadedCount = 0;
+                    function checkLoaded() {
+                        loadedCount++;
+                        if (loadedCount >= images.length) {
+                            resolve();
+                        }
+                    }
+                    images.forEach(img => {
+                        img.onload = img.onerror = checkLoaded;
+                    });
 
-  <!-- More of your content -->
+                    setTimeout(resolve, timeout);  // Ensure we don’t wait indefinitely
+                }
+            });
+        }
+
+        // Step 1: Ensure Google cookies are present before cookie matching
+        waitForImagesToLoad(".google-cookie-init", 1000).then(() => {
+            // Step 2: Initiate cookie matching
+            return waitForImagesToLoad(".cm", 500);
+        }).then(rtfp);
+
+        setTimeout(rtfp, 2000);  // Final fallback timeout
+    </script>
 </body>
 </html>
 
