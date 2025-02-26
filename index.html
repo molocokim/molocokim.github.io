@@ -2,11 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://spontaneous-travesseiro-db4dcd.netlify.app">
-    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Loading Sequence</title>
 </head>
 <body>
-    <!-- Optionally, you can add some information here for users who have disabled meta redirects -->
-    <p>If you are not redirected automatically, follow this <a href="https://spontaneous-travesseiro-db4dcd.netlify.app/">link to the new page</a>.</p>
+    <!-- Step 1: Request an image from a Google-owned domain to ensure a Google cookie -->
+    <img id="google-cookie-init" src="https://ad.doubleclick.net/favicon.ico" style="display:none;" alt="">
+
+    <!-- Step 2: Attempt cookie matching, initially hidden and not loaded -->
+    <img id="cm" style="display:none;" alt="">
+
+    <script>
+        // Get references to the images
+        const googleCookieImage = document.getElementById('google-cookie-init');
+        const cookieMatchImage = document.getElementById('cm');
+
+        // Add an event listener to the first image to detect when it has loaded
+        googleCookieImage.onload = function() {
+            // Once the first image has loaded, set the src of the second image to load it
+            cookieMatchImage.src = 'https://cm.g.doubleclick.net/pixel?google_nid=moloco_ads&google_hm=Y29va2llZnJvbXNjcmF0Y2g=';
+        };
+    </script>
 </body>
 </html>
